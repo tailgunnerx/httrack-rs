@@ -7,6 +7,12 @@
 > * **Official Forum & Documentation:** [https://forum.httrack.com/](https://forum.httrack.com/)
 > * **License:** GPL-3.0-or-later (preserving upstream HTTrack licensing and templates)
 
+> [!WARNING]
+> **AI "Vibe Coded" Disclaimer & How to Request Updates:**
+> * This Rust reimplementation was **vibe coded with Gemini 4 Argon**.
+> * **No Warranty / No Liability:** This software is provided strictly **"AS IS"** without warranty of any kind. The repository owner assumes **no responsibility or liability** for any bugs, edge cases, or issues that arise from using it.
+> * **Want a Feature or Bug Fix? Send a Plug-and-Play AI Prompt!** If you open a GitHub Issue requesting a fix or feature, please include a **ready-to-paste AI prompt** describing the exact change you want so it can be plugged straight into the AI when time permits.
+
 ---
 
 ## Ready-to-Run Download (No Compiling or Rust Installation Required!)

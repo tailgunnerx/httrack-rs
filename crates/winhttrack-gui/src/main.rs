@@ -142,6 +142,7 @@ struct WinHttrackApp {
     stop_flag: Arc<AtomicBool>,
     last_output_dir: Option<PathBuf>,
     status_message: String,
+    screenshot_mode: Option<(String, u32)>,
 }
 
 /// Clear, self-explanatory Action names + detailed breakdown for the (?) info bubble
@@ -192,18 +193,21 @@ impl WinHttrackApp {
             .build()
             .expect("Failed to create Tokio runtime");
 
-        let default_base = std::env::current_dir()
-            .unwrap_or_else(|_| PathBuf::from("C:\\My Web Sites"))
-            .join("My Web Sites")
-            .to_string_lossy()
-            .to_string();
+        let default_base = "C:\\My Web Sites".to_string();
+
+        let screenshot_mode = std::env::var("HTTRACK_SCREENSHOT_MODE").ok().map(|m| (m, 0));
+        let (init_step, init_modal, init_tab) = match screenshot_mode.as_ref().map(|(s, _)| s.as_str()) {
+            Some("main") => (WizardStep::WebAddresses, false, OptionsTab::MimeTypes),
+            Some("prefs") => (WizardStep::WebAddresses, true, OptionsTab::MimeTypes),
+            _ => (WizardStep::Welcome, false, OptionsTab::MimeTypes),
+        };
 
         Self {
             rt,
-            wizard_step: WizardStep::Welcome,
+            wizard_step: init_step,
 
-            show_options_modal: false,
-            options_tab: OptionsTab::MimeTypes,
+            show_options_modal: init_modal,
+            options_tab: init_tab,
             show_add_url_modal: false,
             show_about_modal: false,
             show_log_modal: false,
@@ -277,6 +281,7 @@ impl WinHttrackApp {
             stop_flag: Arc::new(AtomicBool::new(false)),
             last_output_dir: None,
             status_message: "Welcome to WinHTTrack!".to_string(),
+            screenshot_mode,
         }
     }
 
@@ -1136,6 +1141,44 @@ impl eframe::App for WinHttrackApp {
         }
         if self.active_info_popup.is_some() {
             self.render_info_bubble_popup(ctx);
+        }
+
+        // Handle automated screenshot capture if HTTRACK_SCREENSHOT_MODE is set
+        let mut trigger_rule_test = false;
+        if let Some((ref mode, ref mut frame_count)) = self.screenshot_mode {
+            *frame_count += 1;
+            if *frame_count == 2 && mode == "prefs" {
+                self.skip_video = true;
+                self.skip_archives = true;
+                trigger_rule_test = true;
+            }
+            if *frame_count == 6 {
+                ctx.send_viewport_cmd(egui::ViewportCommand::Screenshot(egui::UserData::default()));
+            }
+            let out_path = std::env::var("HTTRACK_SCREENSHOT_OUT").unwrap_or_else(|_| "screenshot.png".to_string());
+            let mut saved = false;
+            ctx.input(|i| {
+                for event in &i.raw.events {
+                    if let egui::Event::Screenshot { image, .. } = event {
+                        let [w, h] = image.size;
+                        let mut rgba = Vec::with_capacity(w * h * 4);
+                        for px in &image.pixels {
+                            rgba.extend_from_slice(&px.to_array());
+                        }
+                        if let Some(buf) = image::RgbaImage::from_raw(w as u32, h as u32, rgba) {
+                            let _ = buf.save(&out_path);
+                            saved = true;
+                        }
+                    }
+                }
+            });
+            if saved || *frame_count > 40 {
+                std::process::exit(0);
+            }
+            ctx.request_repaint();
+        }
+        if trigger_rule_test {
+            self.run_rule_tester();
         }
     }
 }

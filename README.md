@@ -15,6 +15,20 @@
 
 ---
 
+## Screenshots
+
+### 1. Classic WinHTTrack Main Wizard (`WinHTTrack.exe`)
+*Features clear Action descriptions, inline **"What this mode does / When to use it"** guidance, interactive **`[ ? ]`** info bubbles, and quick MIME exclusions:*
+
+![WinHTTrack Main Wizard](docs/screenshots/main_wizard.png)
+
+### 2. Redesigned Preferences & Mirror Options (`Set options...`)
+*Features framed 2-row folder tabs, section dividers, **`[ ? ]`** explanation bubbles on every setting, one-click Two-Stage MIME exclusions, and a live URL Rule Tester (`--why`):*
+
+![WinHTTrack Preferences & MIME Types](docs/screenshots/preferences_options.png)
+
+---
+
 ## Ready-to-Run Download (No Compiling or Rust Installation Required!)
 
 Want to run **WinHTTrack** right now without installing Rust or compiling anything?

@@ -1,0 +1,56 @@
+name: Build & Release Binaries
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-windows:
+    name: Build Windows x64 Portable Release
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust Toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Build Release Binaries (WinHTTrack.exe, httrack.exe, webhttrack.exe)
+        run: cargo build --release --bins
+
+      - name: Package Portable Distribution ZIP
+        shell: pwsh
+        run: |
+          $dist = "httrack-rs-v3.51.0-windows-x64"
+          New-Item -ItemType Directory -Force -Path $dist | Out-Null
+          Copy-Item "target/release/WinHTTrack.exe" "$dist/WinHTTrack.exe"
+          Copy-Item "target/release/httrack.exe" "$dist/httrack.exe"
+          Copy-Item "target/release/webhttrack.exe" "$dist/webhttrack.exe"
+          Copy-Item -Recurse "assets" "$dist/assets"
+          Copy-Item "README.md" "$dist/README.md"
+          Copy-Item "LICENSE" "$dist/LICENSE"
+          Compress-Archive -Path "$dist/*" -DestinationPath "$dist.zip" -Force
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: httrack-rs-windows-x64
+          path: |
+            httrack-rs-v3.51.0-windows-x64.zip
+            target/release/WinHTTrack.exe
+            target/release/httrack.exe
+            target/release/webhttrack.exe
+
+      - name: Publish to GitHub Release (on tag)
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            httrack-rs-v3.51.0-windows-x64.zip
+            target/release/WinHTTrack.exe
+            target/release/httrack.exe
+            target/release/webhttrack.exe

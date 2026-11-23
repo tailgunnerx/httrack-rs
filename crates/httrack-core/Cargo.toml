@@ -1,0 +1,24 @@
+[package]
+name = "httrack-core"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+tokio.workspace = true
+reqwest.workspace = true
+scraper.workspace = true
+url.workspace = true
+md-5.workspace = true
+sha1.workspace = true
+sha2.workspace = true
+base64.workspace = true
+regex.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+chrono.workspace = true
+zip.workspace = true
+flate2.workspace = true
+uuid.workspace = true
+anyhow.workspace = true
+thiserror.workspace = true
+tracing.workspace = true

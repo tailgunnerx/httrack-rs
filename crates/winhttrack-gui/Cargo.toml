@@ -1,0 +1,17 @@
+[package]
+name = "winhttrack-gui"
+version.workspace = true
+edition.workspace = true
+
+[[bin]]
+name = "WinHTTrack"
+path = "src/main.rs"
+
+[dependencies]
+httrack-core = { path = "../httrack-core" }
+tokio.workspace = true
+eframe.workspace = true
+rfd.workspace = true
+image.workspace = true
+url.workspace = true
+anyhow.workspace = true

@@ -1,0 +1,17 @@
+# Rust build artifacts
+/target/
+
+# Mirrored website output folders
+/mirrors/
+/My Web Sites/
+hts-cache/
+hts-log.txt
+hts-in_progress.lock
+*.warc
+*.warc.gz
+
+# OS & IDE files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
